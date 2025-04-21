@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 
@@ -10,13 +10,25 @@ import CartDrawer from "./components/CartDrawer.jsx";
 import SearchBar from "./components/SearchBar.jsx";
 import CheckoutPage from "./components/CheckoutPage.jsx";
 
-import sampleProducts from "./sampleData.js";
+// import sampleProducts from "./sampleData.js";
+
+
 
 export default function App() {
+
+  const [sampleProducts, setSampleProducts] = useState([]);
+
+  useEffect(() => {
+    fetch('https://ht6v4zlpkd.execute-api.us-east-1.amazonaws.com/prod/products')
+      .then((res) => res.json())
+      .then((data) => setSampleProducts(data))
+      .catch((err) => console.error('Error fetching products:', err));
+  }, []);
+
   // 1) derive the min/max price from your data
-  const prices = sampleProducts.map((p) => p.price);
-  const absoluteMin = Math.min(...prices);
-  const absoluteMax = Math.max(...prices);
+  const prices = sampleProducts.map((p) => Number(p.price));
+  const absoluteMin = prices.length ? Math.min(...prices) : 0;
+  const absoluteMax = prices.length ? Math.max(...prices) : 100;
 
   // 2) initialize filters state using those values
   const [filters, setFilters] = useState({
